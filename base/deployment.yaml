@@ -19,18 +19,12 @@ spec:
           emptyDir: {}
       containers:
         - name: boinc-client
+          # this is the updated arm32v7 version of the image, for other platforms use the official boinc/client:latest
           image: tmcsantos/boinc-client:latest
           command: ["/usr/bin/boinc"]
           args: ["--no_gpus"]
           imagePullPolicy: Always
           lifecycle:
-            postStart:
-              exec:
-                command: 
-                - /bin/sh
-                - -c
-                - while ! /usr/bin/boinccmd --get_cc_status >> /dev/null; do sleep 1; 
-                  done && /usr/bin/boinccmd --project_attach $(PROJECT_URL) $(WEAK_KEY)
             preStop:
               exec:
                 command: ["/usr/bin/boinccmd", "--quit"]
