@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: boinc
+  name: boinc
+spec:
+  replicas: 3
+  template:
+    spec:
+      $setElementOrder/containers:
+      - name: boinc-client
+      containers:
+      - envFrom:
+        - secretRef:
+            name: boinc-united
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "while ! /usr/bin/boinccmd --get_cc_status; do sleep 1; done; /usr/bin/boinccmd --join_acct_mgr '$(URL)' '$(NAME)' '$(PASS)'"]
+          preStop:
+            exec:
+              command: ["/usr/bin/boinccmd", "--quit_acct_mgr"]
+        name: boinc-client

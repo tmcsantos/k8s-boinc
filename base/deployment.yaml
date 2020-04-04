@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: boinc
+  labels:
+    app: boinc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: boinc
+  template:
+    metadata:
+      labels:
+        app: boinc
+    spec:
+      volumes:
+        - name: boinc-workspace
+          emptyDir: {}
+      containers:
+        - name: boinc-client
+          image: tmcsantos/boinc-client:latest
+          command: ["/usr/bin/boinc"]
+          args: ["--no_gpus"]
+          imagePullPolicy: Always
+          lifecycle:
+            postStart:
+              exec:
+                command: 
+                - /bin/sh
+                - -c
+                - while ! /usr/bin/boinccmd --get_cc_status >> /dev/null; do sleep 1; 
+                  done && /usr/bin/boinccmd --project_attach $(PROJECT_URL) $(WEAK_KEY)
+            preStop:
+              exec:
+                command: ["/usr/bin/boinccmd", "--quit"]
+          envFrom:
+            - secretRef:
+                name: boinc-account
+          volumeMounts:
+            - name: boinc-workspace
+              mountPath: /var/lib/boinc

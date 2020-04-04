@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+pods=($(kubectl get po -A -l app=boinc -o json | jq -c '.items[] as {metadata: {$namespace, $name}} ?// {metadata: [{$namespace, $name}]} | {$namespace, $name}'))
+
+podexec() {
+  local cmd="$@"
+  for pod in ${pods[*]}; do
+    ns=$(echo $pod | jq -r '.namespace')
+    name=$(echo $pod | jq -r '.name')
+    echo "=== $ns: $name ==="
+    echo "kubectl -n $ns exec $name -- /bin/sh -c $cmd"
+    kubectl -n $ns exec $name -- /bin/sh -c "$cmd"
+    echo -e "======\n"
+  done
+}
+
+podexec "$@"
