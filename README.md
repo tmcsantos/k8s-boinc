@@ -21,6 +21,11 @@ kubectl -n united exec -it boinc-d85b899c4-dlnk9 bash
 boinccmd --acct_mgr attach "$URL" "$NAME" "$PASS"
 ```
 
+Follow the pods logs
+```bash
+kubectl -n united logs -lapp=boinc -f
+```
+
 ## Utility controller
 There is simple script `controller` to issue commands directly in the running pods. It depends on [jq](https://stedolan.github.io/jq/).
 
