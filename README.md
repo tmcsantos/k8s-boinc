@@ -8,7 +8,7 @@ edit `scienceunited/account.env` with your account information.
 kubectl apply -k scienceunited
 ```
 
-List lods.
+List Pods.
 
 ```bash
 kubectl get po -l app=boinc -A
