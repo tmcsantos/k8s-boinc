@@ -15,10 +15,7 @@ spec:
         - secretRef:
             name: boinc-united
         lifecycle:
-          postStart:
-            exec:
-              command: ["/bin/sh", "-c", "while ! /usr/bin/boinccmd --get_cc_status; do sleep 1; done; /usr/bin/boinccmd --join_acct_mgr '$(URL)' '$(NAME)' '$(PASS)'"]
           preStop:
             exec:
-              command: ["/usr/bin/boinccmd", "--quit_acct_mgr"]
+              command: ["/usr/bin/boinccmd", "--quit"]
         name: boinc-client
